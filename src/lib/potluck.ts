@@ -373,18 +373,15 @@ export async function claimItem(itemId: string, input: unknown): Promise<ActionR
   return finish(outcome);
 }
 
-export async function releaseClaim(claimId: string, input: unknown, admin: boolean): Promise<ActionResult> {
+export async function releaseClaim(claimId: string, input: unknown): Promise<ActionResult> {
   if (!isUuid(claimId)) return { ok: false, status: 404, error: "That signup is already gone." };
   const guestName = cleanLine(bodyOf(input).guestName, 40);
-  if (!admin && !guestName.value) {
-    return { ok: false, status: 400, error: "Add your name so people know who's bringing it." };
-  }
   if (guestName.tooLong) return { ok: false, status: 400, error: "Keep your name under 40 characters." };
   const outcome = await withTransaction(async (query) => {
     const rows = await query("select item_id, guest_name from claims where id = $1 for update", [claimId]);
     const row = rows[0];
     if (!row) return { ok: false as const, status: 404, error: "That signup is already gone." };
-    if (!admin && !namesMatch(guestName.value, text(row.guest_name))) {
+    if (guestName.value && !namesMatch(guestName.value, text(row.guest_name))) {
       return { ok: false as const, status: 403, error: "That signup is under a different name." };
     }
     const itemId = text(row.item_id);

@@ -1,4 +1,3 @@
-import { basicAuthOk, unauthorized } from "@/lib/basic-auth";
 import { assertBrowserWrite, fail, json, readJson } from "@/lib/http";
 import { deleteItem, updateItem } from "@/lib/potluck";
 
@@ -9,7 +8,6 @@ type Context = { params: Promise<{ id: string }> };
 
 export async function PATCH(request: Request, context: Context) {
   try {
-    if (!(await basicAuthOk(request.headers.get("authorization")))) return unauthorized();
     const body = await readJson(request);
     if (!body.ok) return body.response;
     const { id } = await context.params;
@@ -23,7 +21,6 @@ export async function PATCH(request: Request, context: Context) {
 
 export async function DELETE(request: Request, context: Context) {
   try {
-    if (!(await basicAuthOk(request.headers.get("authorization")))) return unauthorized();
     const blocked = assertBrowserWrite(request);
     if (blocked) return blocked;
     const { id } = await context.params;

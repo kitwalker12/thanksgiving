@@ -28,9 +28,7 @@ export async function send(url: string, method: "POST" | "PATCH" | "DELETE", bod
     error:
       typeof data.error === "string"
         ? data.error
-        : response.status === 401
-          ? "The hosting login didn't go through. Refresh and sign in again."
-          : undefined,
+        : undefined,
     potluck: data.potluck,
   };
 }

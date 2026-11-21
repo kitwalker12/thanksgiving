@@ -1,4 +1,3 @@
-import { basicAuthOk } from "@/lib/basic-auth";
 import { callerKey, fail, json, readJson, tooMany } from "@/lib/http";
 import { releaseClaim } from "@/lib/potluck";
 
@@ -13,8 +12,7 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const body = await readJson(request);
     if (!body.ok) return body.response;
     const { id } = await context.params;
-    const admin = await basicAuthOk(request.headers.get("authorization"));
-    const result = await releaseClaim(id, body.value, admin);
+    const result = await releaseClaim(id, body.value);
     if (!result.ok) return json(result.status, { error: result.error });
     return json(200, { potluck: result.potluck });
   } catch (error) {

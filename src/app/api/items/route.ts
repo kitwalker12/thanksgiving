@@ -1,4 +1,3 @@
-import { basicAuthOk, unauthorized } from "@/lib/basic-auth";
 import { callerKey, fail, json, readJson, tooMany } from "@/lib/http";
 import { addGuestItem, addHostItem } from "@/lib/potluck";
 
@@ -19,7 +18,6 @@ export async function POST(request: Request) {
       if (!result.ok) return json(result.status, { error: result.error });
       return json(200, { potluck: result.potluck });
     }
-    if (!(await basicAuthOk(request.headers.get("authorization")))) return unauthorized();
     const result = await addHostItem(body.value);
     if (!result.ok) return json(result.status, { error: result.error });
     return json(200, { potluck: result.potluck });
